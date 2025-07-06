@@ -3,7 +3,7 @@ class File:
         self.file_name = file_name
         self.size = size
 
-class Dictionary:
+class Directory:
     def __init__(self, name):
         self.name = name
         self.files = []
