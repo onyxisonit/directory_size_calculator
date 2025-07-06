@@ -2,20 +2,51 @@ from file_system import File, Directory
 from example import build_example_filesystem
 
 # Helper functions
-def handle_cd(arg, curr_dir):
-    if arg == "..":
-        if curr_dir.parent:
-           return curr_dir.parent
+"""
+only handled single directory logic
+# def handle_cd(arg, curr_dir):
+#     if arg == "..":
+#         if curr_dir.parent:
+#            return curr_dir.parent
+#         else:
+#             print("Already at root directory")
+#             return curr_dir
+#
+#     for subdir in curr_dir.subdirectories:
+#         if subdir.name == arg:
+#             return subdir
+#
+#     print(f"No such directory: {arg}")
+#     return curr_dir
+"""
+def navigate_cd(path_str, curr_dir, curr_path):
+    parts = path_str.strip().split('/')
+    dir_ptr = curr_dir
+    path_copy = curr_path.copy()
+
+    for part in parts:
+        if part == "" or part == ".":
+            continue
+        elif part == "..":
+            if dir_ptr.parent is not None:
+                dir_ptr = dir_ptr.parent
+                if len(path_copy) > 1:
+                    path_copy.pop()
+            else:
+                print("Already at root.")
         else:
-            print("Already at root directory")
-            return curr_dir
+            found = False
+            for sub in dir_ptr.subdirectories:
+                if sub.name == part:
+                    dir_ptr = sub
+                    path_copy.append(part)
+                    found = True
+                    break
+            if not found:
+                print(f"No such directory: {part}")
+                return curr_dir, curr_path  # Don't change curr_dir if any part of path fails
 
-    for subdir in curr_dir.subdirectories:
-        if subdir.name == arg:
-            return subdir
-
-    print(f"No such directory: {arg}")
-    return curr_dir
+    return dir_ptr, path_copy
 
 def handle_ls(curr_dir):
     if not curr_dir.subdirectories and not curr_dir.files:
@@ -61,16 +92,24 @@ def run_cli():
             """)
 
         elif command == "cd":
-            if arg:
-                new_dir = handle_cd(arg, curr_dir)
-                if new_dir != curr_dir:
-                    if arg == "..":
-                        path.pop()
-                    else:
-                        path.append(arg)
-                    curr_dir = new_dir
-                else:
-                    print("Usage: cd <directory>")
+            """
+            below is logic, to handle only single directory
+            # if arg:
+            #     new_dir = handle_cd(arg, curr_dir)
+            #     if new_dir != curr_dir:
+            #         if arg == "..":
+            #             path.pop()
+            #         else:
+            #             path.append(arg)
+            #         curr_dir = new_dir
+            #     else:
+            #         print("Usage: cd <directory>")
+            """
+            if not arg:
+                print("Usage: cd <directory>")
+                continue
+            curr_dir, path = navigate_cd(arg, curr_dir, path)
+
         elif command == "ls":
             handle_ls(curr_dir)
         elif command == "size":
