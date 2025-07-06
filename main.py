@@ -36,7 +36,7 @@ def handle_size(curr_dir):
 
     return total
 
-def main():
+def run_cli():
     curr_dir = build_example_filesystem()
     path = ["root"]
 
@@ -82,4 +82,4 @@ def main():
             print("Unknown command. Type 'help' for list.")
 
 if __name__ == '__main__':
-    main()
+    run_cli()
