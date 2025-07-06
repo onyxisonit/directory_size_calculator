@@ -2,24 +2,7 @@ from file_system import File, Directory
 from example import build_example_filesystem
 
 # Helper functions
-"""
-only handled single directory logic
-# def handle_cd(arg, curr_dir):
-#     if arg == "..":
-#         if curr_dir.parent:
-#            return curr_dir.parent
-#         else:
-#             print("Already at root directory")
-#             return curr_dir
-#
-#     for subdir in curr_dir.subdirectories:
-#         if subdir.name == arg:
-#             return subdir
-#
-#     print(f"No such directory: {arg}")
-#     return curr_dir
-"""
-def navigate_cd(path_str, curr_dir, curr_path):
+def handle_cd(path_str, curr_dir, curr_path):
     parts = path_str.strip().split('/')
     dir_ptr = curr_dir
     path_copy = curr_path.copy()
@@ -28,7 +11,7 @@ def navigate_cd(path_str, curr_dir, curr_path):
         if part == "" or part == ".":
             continue
         elif part == "..":
-            if dir_ptr.parent is not None:
+            if dir_ptr.parent:
                 dir_ptr = dir_ptr.parent
                 if len(path_copy) > 1:
                     path_copy.pop()
@@ -67,6 +50,7 @@ def handle_size(curr_dir):
 
     return total
 
+# Main CLI implementation
 def run_cli():
     curr_dir = build_example_filesystem()
     path = ["root"]
@@ -90,26 +74,11 @@ def run_cli():
             - size           : Calculate total size of current directory (recursive)
             - exit           : Quit the application
             """)
-
         elif command == "cd":
-            """
-            below is logic, to handle only single directory
-            # if arg:
-            #     new_dir = handle_cd(arg, curr_dir)
-            #     if new_dir != curr_dir:
-            #         if arg == "..":
-            #             path.pop()
-            #         else:
-            #             path.append(arg)
-            #         curr_dir = new_dir
-            #     else:
-            #         print("Usage: cd <directory>")
-            """
             if not arg:
                 print("Usage: cd <directory>")
                 continue
-            curr_dir, path = navigate_cd(arg, curr_dir, path)
-
+            curr_dir, path = handle_cd(arg, curr_dir, path)
         elif command == "ls":
             handle_ls(curr_dir)
         elif command == "size":

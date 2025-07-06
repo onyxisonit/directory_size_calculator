@@ -28,10 +28,51 @@ class TestFileSystem(unittest.TestCase):
         )
         self.assertEqual(total_size, expected)
 
+
+    def test_handle_cd_valid_and_invalid(self):
+        curr = self.root
+        path = ["root"]
+
+        curr, path = handle_cd("docs", curr, path)
+        self.assertEqual(curr.name, "docs")
+
+        curr, path = handle_cd("..", curr, path)
+        self.assertEqual(curr.name, "root")
+
+        curr, path = handle_cd("not_a_folder", curr, path)
+        self.assertEqual(curr.name, "root")  # invalid directory, should not change
+
+    def test_handle_cd_deep_nesting(self):
+        curr = self.root
+        path = ["root"]
+
+        #test handling of single directory path
+        curr, path = handle_cd("desktop", curr, path)
+        curr, path = handle_cd("screenshots", curr, path)
+        self.assertEqual(curr.name, "screenshots")
+
+        curr, path = handle_cd("..", curr, path)
+        self.assertEqual(curr.name, "desktop")
+
+        curr, path = handle_cd("..", curr, path)
+        self.assertEqual(curr.name, "root")
+
+        # test handling of multiple directory path
+        curr, path = handle_cd("desktop/screenshots", curr, path)
+        self.assertEqual(curr.name, "screenshots")
+
+        curr, path = handle_cd("../../media/images/../../docs", curr, path)
+        self.assertEqual(curr.name, "docs")
+
     def test_empty_directory(self):
         new_dir = Directory("empty")
+        new_dir.parent = None  # simulate root
         self.assertEqual(handle_size(new_dir), 0)
-        self.assertEqual(handle_cd("..", new_dir), new_dir)  # no parent
+
+        # no parent, path shouldn't change
+        curr, path = handle_cd("..", new_dir, ["empty"])
+        self.assertEqual(curr.name, "empty")
+        self.assertEqual(path, ["empty"])
 
 
 if __name__ == '__main__':
