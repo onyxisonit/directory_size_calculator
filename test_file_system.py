@@ -74,6 +74,33 @@ class TestFileSystem(unittest.TestCase):
         self.assertEqual(curr.name, "empty")
         self.assertEqual(path, ["empty"])
 
+    def test_deeply_nested_empty_directories(self):
+        root = Directory("root")
+        a = Directory("a")
+        b = Directory("b")
+        c = Directory("c")
+        d = Directory("d")
+
+        a.parent = root
+        b.parent = a
+        c.parent = b
+        d.parent = c
+
+        a.subdirectories.append(b)
+        b.subdirectories.append(c)
+        c.subdirectories.append(d)
+        root.subdirectories.append(a)
+
+        # d is empty, as are all others
+        self.assertEqual(handle_size(root), 0)
+
+    def test_single_massive_file(self):
+        root = Directory("root")
+        big_file = File("giant.iso", 999999)
+        root.files.append(big_file)
+
+        self.assertEqual(handle_size(root), 999999)
+
 
 if __name__ == '__main__':
     unittest.main()
