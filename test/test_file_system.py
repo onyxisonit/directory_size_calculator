@@ -1,7 +1,10 @@
 import unittest
-from src.file_system import File, Directory
-from src.example import build_example_filesystem
-from src.main import handle_cd, handle_size
+import os, sys
+sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), '..', 'src')))
+
+from file_system import File, Directory
+from example import build_example_filesystem
+from main import handle_cd, handle_size
 
 class TestFileSystem(unittest.TestCase):
 
@@ -51,10 +54,10 @@ class TestFileSystem(unittest.TestCase):
         curr, path = handle_cd("screenshots", curr, path)
         self.assertEqual(curr.name, "screenshots")
 
-        curr, path = handle_cd("../..", curr, path)
+        curr, path = handle_cd("../", curr, path)
         self.assertEqual(curr.name, "desktop")
 
-        curr, path = handle_cd("../..", curr, path)
+        curr, path = handle_cd("../../", curr, path)
         self.assertEqual(curr.name, "root")
 
         # test handling of multiple directory path

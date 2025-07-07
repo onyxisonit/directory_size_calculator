@@ -1,4 +1,3 @@
-from file_system import File, Directory
 from example import build_example_filesystem
 
 # Helper functions
