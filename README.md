@@ -47,7 +47,7 @@ python src/main.py
 ```
 
 ---
-## Test Data
+## 💻 Test Data
 
 Run unit tests from the root directory:
 ```bash
